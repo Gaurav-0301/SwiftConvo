@@ -18,7 +18,7 @@ const signup = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "Email already used. Try another account.",
+        message: "Email already used !! Try another account.",
       });
     }
 
