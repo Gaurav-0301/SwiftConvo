@@ -1,7 +1,7 @@
 const reg = require("../models/auth.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
+const cloudinary=require("cloudinary");
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -116,4 +116,36 @@ const logout = async (req, res) => {
   });
 };
 
-module.exports = { login, signup, logout };
+const updateProfile=async(req,res)=>{
+
+  try {
+    const {profilePic}=req.body;
+    const userId=req.user._id;
+
+    if(!profilePic){
+      return res.status(400).json({
+        message:"Profile pic is required"
+      });
+    }
+    const uploadResponse=await cloudinary.uploader.upload(profilePic);
+    const updatedUser=await UserActivation.findByIdAndUpdate(userId,{profilePic:uploadResponse.secure_url},{new:true})
+
+    res.status(200).json(updatedUser)
+  } catch (error) {
+    console.log("ProfileUpdate Error " ,error);
+    res.status(401).json({message:"ProfileUpdate Error ",error})
+  }  
+}
+
+const checkAuth=(req,res)=>{
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    console.log("Error in CheckAuthController ",error);
+    res.status(500).json({
+      message:"Error in CheckAuthController"
+    });
+  }
+}
+
+module.exports = { login, signup, logout ,updateProfile,checkAuth };

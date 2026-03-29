@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+
 
 const authSchema = new mongoose.Schema({
     name: {
@@ -19,6 +19,10 @@ const authSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    profilePic:{
+        type:String,
+        default:"",
     }
 }, { timestamps: true });
 
