@@ -1,7 +1,7 @@
 const jwt=require("jsonwebtoken")
 const reg=require("../models/auth.model")
 
-const potectedRoute=async(req,res,next)=>{
+const protectedRoute=async(req,res,next)=>{
     try {
         const token=req.cookies.token;
         if(!token){
@@ -17,7 +17,7 @@ const potectedRoute=async(req,res,next)=>{
             });
          }
 
-         const user=await reg.findById(decoded._id).select("-password");
+         const user=await reg.findById(decoded.id).select("-password");
 
          if(!user){
               return res.status(401).json({
@@ -35,4 +35,4 @@ const potectedRoute=async(req,res,next)=>{
     }
 }
 
-module.exports={potectedRoute};
+module.exports={protectedRoute};
