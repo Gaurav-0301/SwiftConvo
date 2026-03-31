@@ -1,7 +1,7 @@
 const reg = require("../models/auth.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const cloudinary=require("cloudinary");
+const cloudinary = require("../lib/cloudinary.lib.js");
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -117,26 +117,33 @@ const logout = async (req, res) => {
   });
 };
 
-const updateProfile=async(req,res)=>{
-
+const updateProfile = async (req, res) => {
   try {
-    const {profilePic}=req.body;
-    const userId=req.user._id;
-
-    if(!profilePic){
-      return res.status(400).json({
-        message:"Profile pic is required"
-      });
+    const { profilePic } = req.body;
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
     }
-    const uploadResponse=await cloudinary.uploader.upload(profilePic);
-    const updatedUser=await UserActivation.findByIdAndUpdate(userId,{profilePic:uploadResponse.secure_url},{new:true})
+    const userId = req.user._id;
 
-    res.status(200).json(updatedUser)
+    if (!profilePic) {
+      return res.status(400).json({ message: "Profile pic is required" });
+    }
+
+   const uploadResponse = await cloudinary.uploader.upload(profilePic);
+
+    const updatedUser = await reg.findByIdAndUpdate(
+      userId,
+      { profilePic: uploadResponse.secure_url },
+      { new: true }
+    ).select("-password"); 
+
+    res.status(200).json(updatedUser);
+    
   } catch (error) {
-    console.log("ProfileUpdate Error " ,error);
-    res.status(401).json({message:"ProfileUpdate Error ",error})
-  }  
-}
+    console.log("ProfileUpdate Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 const checkAuth=(req,res)=>{
   try {

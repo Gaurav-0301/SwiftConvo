@@ -6,6 +6,6 @@ const {login,signup,logout,updateProfile, checkAuth} =require("../controllers/au
 authRouter.post("/login",login);
 authRouter.post("/signup",signup )
 authRouter.post("/logout",logout)
-authRouter.put("/updateProfile",protectedRoute,updateProfile)
+authRouter.put("/updateprofile",protectedRoute,updateProfile)
 authRouter.get("/check",protectedRoute,checkAuth)
 module.exports=authRouter;

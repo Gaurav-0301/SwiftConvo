@@ -62,6 +62,20 @@ catch (error) {
 }finally {
       set({ isLoggingIn: false });
     }
+  },
+  updateProfile:async(profilePic)=>{
+    set({isUpdatingProfile:true});
+    try {
+      const res=await axiosInstance.put("/auth/updateprofile",profilePic);
+      set({authUser:res.data});
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
+      console.log("updateProfile error in useAuthStore.." , error.response?.data)
+    }finally{
+      set({isUpdatingProfile:false});
+    }
   }
 
 }));
