@@ -46,5 +46,22 @@ catch (error) {
     } catch (error) {
         console.log("Logout error in useAuthStore ",error);
     }
+  },
+    login: async (data) => {
+    set({ isLoggingIn: true });
+    try {
+      const res = await axiosInstance.post("/auth/login", data);
+      set({ authUser: res.data });
+      toast.success("Login successfully");
+    } // useAuthStore.js
+catch (error) {
+  
+  const errorMessage = error.response?.data?.message || "An error occurred";
+  toast.error(errorMessage);
+  console.log("Signup error details:", error.response?.data);
+}finally {
+      set({ isLoggingIn: false });
+    }
   }
+
 }));
