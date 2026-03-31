@@ -3,6 +3,7 @@ import { useAuthStore } from './../Store/useAuthStore';
 import { MessagesSquare, User, Mail, Lock, EyeOff, Eye, Loader, LockIcon } from 'lucide-react';
 import { Link } from 'react-router-dom'; 
 import { toast } from 'react-hot-toast';
+import AuthImagePattern from '../Components/AuthImagePattern';
 
 
 const SignupPage = () => {
@@ -10,7 +11,7 @@ const SignupPage = () => {
   
   // Fix: Use brackets [] for useState, not curly braces {}
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
   });
@@ -18,12 +19,18 @@ const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const validateForm = () => {
-  
-  };
+  if(!formData.name.trim()) return toast.error("name is required");
+  if(!formData.email.trim()) return toast.error("Email is required");
+  if(!formData.password.trim()) return toast.error("Password is required");
+
+  if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
+  return true;
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  const success=validateForm();
+  if(success==true) signUp(formData);
     
   };
 
@@ -55,8 +62,8 @@ const SignupPage = () => {
                   type="text"
                   className="input input-bordered w-full pl-10"
                   placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
             </div>
@@ -133,7 +140,12 @@ const SignupPage = () => {
         </div>
       </div>
 
-     
+
+{/* right side */}
+     <AuthImagePattern
+     title="Join our community"
+     Subtitle1="Connect with friends, share moment and stay in touch with your "
+     subtitle2="loved ones !!"/>
     </div>
   );
 };
