@@ -2,7 +2,9 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 
+
 export const useAuthStore = create((set) => ({
+   
   authUser: null,
   isSignUp: false,
   isLoggingIn: false,
@@ -10,6 +12,7 @@ export const useAuthStore = create((set) => ({
   isCheckingAuth: true,
 
   checkAuth: async () => {
+   
     try {
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
