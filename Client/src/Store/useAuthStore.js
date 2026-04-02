@@ -79,6 +79,8 @@ catch (error) {
     }finally{
       set({isUpdatingProfile:false});
     }
-  }
+  },
+  
+  onlineUsers:async()=>{},
 
 }));

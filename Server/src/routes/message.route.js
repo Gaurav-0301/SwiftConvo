@@ -6,6 +6,6 @@ const messageRouter=express.Router();
 
 messageRouter.get("/getusers",protectedRoute,getUsers);
 messageRouter.get("/getmessages/:id",protectedRoute, getMessages);
-messageRouter.post("/sendmessage/:id",protectedRoute, sendMessage);
+messageRouter.post("/sendmessages/:id",protectedRoute, sendMessage);
 
 module.exports=messageRouter;

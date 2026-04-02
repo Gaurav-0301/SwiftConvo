@@ -18,23 +18,25 @@ try {
 }
 }
 
-const getMessages=async(req,res)=>{
-    try {
-        const {id:userToChatId}=req.params;
-        const myId=req.user._id;
-        const messages=await MessageChannel.find({
-            $or:[
-                {senderId:myId, receiverId:userTochatId},
-                {senderId:userTochatId, receiverId:myId}
-            ],
-        })
-    } catch (error) {
-        console.log("getmessages controller error ",error);
-        res.status(500).json({
-            message:"getmessages controller error"
-        })
-    }
-}
+const getMessages = async (req, res) => {
+  try {
+    const { id: userToChatId } = req.params;
+    const myId = req.user._id;
+
+    const messages = await msg.find({
+      $or: [
+        { senderId: myId, receiverId: userToChatId },
+        { senderId: userToChatId, receiverId: myId },
+      ],
+    }).sort({ createdAt: 1 }); 
+   
+    res.status(200).json(messages);
+
+  } catch (error) {
+    console.log("Error in getMessages controller: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 const sendMessage=async(req,res)=>{
 try {
