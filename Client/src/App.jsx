@@ -13,8 +13,9 @@ import { useThemeStore } from './Store/useThemeStore';
 import Navbar from './Components/Navbar';
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth,onlineUsers } = useAuthStore();
  const {theme}=useThemeStore();
+ console.log(onlineUsers);
  useEffect(() => {
    
    document.documentElement.setAttribute("data-theme", theme);

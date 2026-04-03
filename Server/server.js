@@ -5,13 +5,14 @@ const authRouter=require("./src/routes/auth.route");
 const messageRouter=require("./src/routes/message.route")
 const {connectDB}=require("./src/config/db")
 const cors= require("cors")
-const app = express();
+const {app,server,io}=require("./src/lib/socket");
 connectDB();
 
 
 app.use(cors({
     origin: "http://localhost:5173",
     credentials:true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 
 }));
 
@@ -23,6 +24,6 @@ app.use("/msg",messageRouter);
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is up and running on http://localhost:${PORT}`);
 });

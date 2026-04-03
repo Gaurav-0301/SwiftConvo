@@ -1,37 +1,87 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react';
 import { useChatStore } from './../Store/useChatStore';
 import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput';
-import { Loader } from 'lucide-react';
 import MessageSkeleton from './skeletons/MessageSkeleton';
+import { useAuthStore } from '../Store/useAuthStore';
+
 
 const ChatContainer = () => {
-  const{messages,getMessages,isMessagesLoading,selectedUser}=useChatStore();
-  
-  useEffect(()=>{
-   getMessages(selectedUser._id)
-  },[selectedUser._id,getMessages]);
+  const {messages = [], getMessages, isMessagesLoading, selectedUser } = useChatStore();
+  const { authUser } = useAuthStore();
+  const messageEndRef = useRef(null);
 
-  if(isMessagesLoading) {
+  useEffect(() => {
+    getMessages(selectedUser._id);
+  }, [selectedUser._id, getMessages]);
+
+  // AUTO-SCROLL: Always scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  if (isMessagesLoading) {
     return (
-    <div className='flex-1 flex flex-col overflow-auto'>
-
-    <ChatHeader/>
-    <MessageSkeleton/>
-    <MessageInput/>
-
-    </div>
-  );
-}
+      <div className='flex-1 flex flex-col overflow-auto'>
+        <ChatHeader />
+        <MessageSkeleton />
+        <MessageInput />
+      </div>
+    );
+  }
 
   return (
     <div className='flex-1 flex flex-col overflow-auto'>
-      <ChatHeader/>
-      <p>messages...</p>
-      <MessageInput/>
+      <ChatHeader />
       
-    </div>
-  )
-}
+      <div className='flex-1 overflow-y-auto p-4 space-y-4'>
+        {messages.map((message) => (
+         
+          <div 
+            key={message._id} 
+            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
+            ref={messageEndRef}
+          >
+            <div className='chat-image avatar'>
+              <div className='size-10 rounded-full border border-base-300'>
+                <img 
+                  src={
+                    message.senderId === authUser._id 
+                      ? authUser.profilePic || "/avatar.png" 
+                      : selectedUser.profilePic || "/avatar.png"
+                  } 
+                  alt="profilePic" 
+                  className="object-cover size-full rounded-full"
+                />
+              </div>
+            </div>
+            
+            <div className='chat-header mb-1'>
+              <time className='text-[10px] opacity-50 ml-1'>
+                {/* FIX 3: Use a helper or .toLocaleString() for readable time */}
+                {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </time>
+            </div>
 
-export default ChatContainer
+            <div className="chat-bubble flex flex-col gap-2">
+              {message.image && (
+                <img
+                  src={message.image}
+                  alt="Attachment"
+                  className="sm:max-w-[200px] rounded-md mb-2"
+                />
+              )}
+              {message.text && <p>{message.text}</p>}
+            </div>
+          </div> 
+        ))}
+      </div>
+
+      <MessageInput />
+    </div>
+  );
+};
+
+export default ChatContainer;
