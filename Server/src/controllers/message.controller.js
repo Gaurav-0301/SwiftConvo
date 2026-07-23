@@ -1,5 +1,5 @@
-const cloudinary  = require("cloudinary");
-import { getReceiverSocketId, getReceiverSocketId } from './../lib/socket';
+const cloudinary  = require("cloudinary").v2;
+const {getReceiverSocketId,io} =require('./../lib/socket');
 const reg=require("../models/auth.model");
 const msg = require("../models/message.model");
 

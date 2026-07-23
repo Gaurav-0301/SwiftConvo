@@ -27,9 +27,6 @@ const authSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 
-
-
-
 // Create model
 const Reg = mongoose.model("Reg", authSchema);
 

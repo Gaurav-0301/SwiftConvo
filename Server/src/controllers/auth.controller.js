@@ -2,6 +2,8 @@ const reg = require("../models/auth.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cloudinary = require("../lib/cloudinary.lib.js");
+
+
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
