@@ -13,16 +13,46 @@ import { useThemeStore } from './Store/useThemeStore';
 import Navbar from './Components/Navbar';
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth,onlineUsers } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth,onlineUsers,connectSocket, disConnectSocket} = useAuthStore();
  const {theme}=useThemeStore();
  console.log(onlineUsers);
+
+
+ useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && authUser) {
+        const { connectSocket, socket } = useAuthStore.getState();
+        if (!socket?.connected) {
+          connectSocket();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [authUser]);
+
+  
  useEffect(() => {
    
    document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+  }, []);
+
+ useEffect(() => {
+  if (authUser) {
+    connectSocket();
+  } else {
+    disConnectSocket();
+  }
+}, [authUser, connectSocket, disConnectSocket]);
+
+
+ 
 
   console.log({ authUser });
 

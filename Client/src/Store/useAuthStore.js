@@ -56,7 +56,8 @@ catch (error) {
         console.log("Logout error in useAuthStore ",error);
     }
   },
-    login: async (data) => {
+    
+  login: async (data) => {
     set({ isLoggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
@@ -89,27 +90,35 @@ catch (error) {
   },
   
   
-  connectSocket:()=>{
-  const {authUser}=get();
-  if(!authUser || get().socket?.connected) return;
-  const socket=io(API,{
-    query:{
-       userId:authUser._id,
-    }
-  }
-   
-  )
-  socket.connect();
-  set({socket:socket});
+connectSocket: () => {
+    const { authUser, socket } = get();
+    if (!authUser) return;
+    
+    if (socket?.connected) return;
 
-  socket.on("getOnlineUsers",(userIds)=>{
-    set({onlineUsers:userIds});
-  });
+    if (socket) {
+      socket.disconnect();
+    }
+
+    const newSocket = io(API, {
+      query: { userId: authUser._id },
+      withCredentials: true, // Required when handling sessions/cookies with socket connections
+    });
+
+    newSocket.connect();
+    set({ socket: newSocket });
+
+    newSocket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
   },
-   
-  
-  disConnectSocket:()=>{
-  if(get().socket?.connected) get().socket.disconnect();
+
+
+  disConnectSocket: () => {
+    if (get().socket?.connected) {
+      get().socket.disconnect();
+      set({ socket: null, onlineUsers: [] });
+    }
   },
   
 

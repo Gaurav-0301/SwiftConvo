@@ -5,19 +5,21 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../Store/useAuthStore';
 
-
 const ChatContainer = () => {
-  const {messages = [], getMessages, isMessagesLoading, selectedUser } = useChatStore();
+  const { messages = [], getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unSubscribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
     getMessages(selectedUser._id);
-  }, [selectedUser._id, getMessages]);
+    subscribeToMessages();
+
+    return () => unSubscribeFromMessages();
+  }, [selectedUser._id, getMessages, subscribeToMessages, unSubscribeFromMessages]);
 
   // AUTO-SCROLL: Always scroll to bottom when new messages arrive
   useEffect(() => {
-    if (messageEndRef.current && messages) {
+    if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
@@ -38,11 +40,9 @@ const ChatContainer = () => {
       
       <div className='flex-1 overflow-y-auto p-4 space-y-4'>
         {messages.map((message) => (
-         
           <div 
             key={message._id} 
             className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-            ref={messageEndRef}
           >
             <div className='chat-image avatar'>
               <div className='size-10 rounded-full border border-base-300'>
@@ -60,7 +60,6 @@ const ChatContainer = () => {
             
             <div className='chat-header mb-1'>
               <time className='text-[10px] opacity-50 ml-1'>
-                {/* FIX 3: Use a helper or .toLocaleString() for readable time */}
                 {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </time>
             </div>
@@ -77,6 +76,9 @@ const ChatContainer = () => {
             </div>
           </div> 
         ))}
+        
+        {/* Scroll anchor target */}
+        <div ref={messageEndRef} />
       </div>
 
       <MessageInput />

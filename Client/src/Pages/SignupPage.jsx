@@ -9,7 +9,7 @@ import AuthImagePattern from '../Components/AuthImagePattern';
 const SignupPage = () => {
   const { signUp, isSignUp } = useAuthStore();
   
-  // Fix: Use brackets [] for useState, not curly braces {}
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
