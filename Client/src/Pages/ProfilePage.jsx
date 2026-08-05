@@ -1,6 +1,6 @@
 import React, { useState } from 'react'; // Added useState
 import { useAuthStore } from '../Store/useAuthStore';
-import { Camera, Mail, User } from 'lucide-react'; // Added Mail and User icons
+import { Camera, Key, Mail, User } from 'lucide-react'; // Added Mail and User icons
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
@@ -75,6 +75,14 @@ const ProfilePage = () => {
                 Email Address
               </div>
               <p className='px-4 py-2.5 bg-base-200 rounded-lg border'>{authUser?.email}</p>
+            </div>
+
+            <div className='space-y-1.5'>
+              <div className='text-sm text-zinc-400 flex items-center gap-2'>
+                <Key className='w-4 h-4' />
+               UID
+              </div>
+              <p className='px-4 py-2.5 bg-base-200 rounded-lg border'>{authUser?.uid}</p>
             </div>
           </div>
 

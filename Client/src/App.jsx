@@ -11,6 +11,7 @@ import { useAuthStore } from './Store/useAuthStore';
 import { Toaster } from 'react-hot-toast';
 import { useThemeStore } from './Store/useThemeStore';
 import Navbar from './Components/Navbar';
+import AddFriends from './Pages/AddFriends';
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth,onlineUsers,connectSocket, disConnectSocket} = useAuthStore();
@@ -70,6 +71,7 @@ const App = () => {
      
         <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
         <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
+        <Route path="/addfriends" element={authUser ? <AddFriends /> : <Navigate to="/login" />} />
         
      
         <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to="/" />} />

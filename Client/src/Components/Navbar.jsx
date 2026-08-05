@@ -1,4 +1,4 @@
-import { LogOut, MessageSquare, Settings, User } from 'lucide-react';
+import { GroupIcon, LogOut, MessageSquare, Plus, Settings, User } from 'lucide-react';
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../Store/useAuthStore';
@@ -23,6 +23,12 @@ const Navbar = () => {
         </Link>
       </div>
       <div className='flex items-center gap-2'>
+         <Link 
+        to={"/addfriends"}
+        className={`btn btn-sm gap-2 transition-colors`}>
+        <Plus className="w-4 h-4"/>
+        <span className='hidden sm:inline'>Add Friends</span>
+        </Link>
 
         <Link 
         to={"/settings"}
