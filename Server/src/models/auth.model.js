@@ -23,6 +23,11 @@ const authSchema = new mongoose.Schema({
     profilePic:{
         type:String,
         default:"",
+    },
+    uid:{
+        type:String,
+        default:"",
+        unique:true
     }
 }, { timestamps: true });
 

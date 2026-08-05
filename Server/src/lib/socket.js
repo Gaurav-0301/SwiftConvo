@@ -22,7 +22,7 @@ function getReceiverSocketId(userId) {
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   
-  if (userId && userId !== "undefined") {
+  if (userId && userId != "undefined") {
     userSocketMap[userId] = socket.id;
   }
 

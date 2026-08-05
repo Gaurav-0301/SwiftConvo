@@ -32,6 +32,16 @@ const signup = async (req, res) => {
       email,
       password: hashedPassword,
     });
+  console.log("userid",user._id.toString().slice(0,10));
+    const uId=user._id.toString().slice(0,10);
+
+    const uidres= await reg.findByIdAndUpdate(
+      user._id,
+      {uid:uId},
+      { new: true }
+    );
+
+    console.log("uid:",uId);
 
     const token = jwt.sign(
       { id: user._id },
@@ -157,5 +167,7 @@ const checkAuth=(req,res)=>{
     });
   }
 }
+
+
 
 module.exports = { login, signup, logout ,updateProfile,checkAuth };

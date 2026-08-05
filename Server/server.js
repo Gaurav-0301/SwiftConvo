@@ -6,6 +6,7 @@ const messageRouter=require("./src/routes/message.route")
 const {connectDB}=require("./src/config/db")
 const cors= require("cors")
 const {app,server,io}=require("./src/lib/socket");
+const searchRouter = require("./src/routes/search.route");
 connectDB();
 
 
@@ -21,6 +22,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use("/auth",authRouter);
 app.use("/msg",messageRouter);
+app.use('/search',searchRouter);
 
 
 const PORT = process.env.PORT || 3000;
