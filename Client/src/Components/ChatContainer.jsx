@@ -7,15 +7,19 @@ import { useAuthStore } from '../Store/useAuthStore';
 
 const ChatContainer = () => {
   const { messages = [], getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unSubscribeFromMessages } = useChatStore();
-  const { authUser } = useAuthStore();
+  const { authUser, socket } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
-    getMessages(selectedUser._id);
-    subscribeToMessages();
+    if (selectedUser?._id) {
+      getMessages(selectedUser._id);
+    }
+  }, [selectedUser?._id, getMessages]);
 
+  useEffect(() => {
+    subscribeToMessages();
     return () => unSubscribeFromMessages();
-  }, [selectedUser._id, getMessages, subscribeToMessages, unSubscribeFromMessages]);
+  }, [selectedUser?._id, socket, subscribeToMessages, unSubscribeFromMessages]);
 
   // AUTO-SCROLL: Always scroll to bottom when new messages arrive
   useEffect(() => {

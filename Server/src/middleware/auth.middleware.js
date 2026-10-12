@@ -24,6 +24,11 @@ const protectedRoute=async(req,res,next)=>{
                 message:"User not found"
             });
          }
+
+         if(!user.uid){
+           user.uid = user._id.toString().slice(0, 10);
+           await user.save();
+         }
        
          req.user=user;
 

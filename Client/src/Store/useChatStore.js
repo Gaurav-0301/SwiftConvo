@@ -4,17 +4,17 @@ import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create((set, get) => ({
-  messages: [], 
+  messages: [],
   users: [],
   selectedUser: null,
-  isUsersLoading: false, 
+  isUsersLoading: false,
   isMessagesLoading: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get("/msg/getusers");
-      set({ users: res.data.data });
+      set({ users: res.data.data || [] });
     } catch (error) {
       console.log("Error fetching users:", error);
     } finally {
@@ -23,10 +23,10 @@ export const useChatStore = create((set, get) => ({
   },
 
   getMessages: async (userId) => {
+    if (!userId) return;
     set({ isMessagesLoading: true });
     try {
       const res = await axiosInstance.get(`/msg/getmessages/${userId}`);
-    
       set({ messages: res.data });
     } catch (error) {
       console.log("getMessage in useChatStore error", error);
@@ -38,8 +38,12 @@ export const useChatStore = create((set, get) => ({
 
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
+    if (!selectedUser) return;
     try {
-      const res = await axiosInstance.post(`/msg/sendmessages/${selectedUser._id}`, messageData);
+      const res = await axiosInstance.post(
+        `/msg/sendmessages/${selectedUser._id}`,
+        messageData
+      );
       set({ messages: [...messages, res.data] });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to send message");
@@ -47,18 +51,23 @@ export const useChatStore = create((set, get) => ({
   },
 
   subscribeToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
-    
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
+    socket.off("newMessage");
+
     socket.on("newMessage", (newMessage) => {
-      
-      if (newMessage.senderId !== selectedUser._id && newMessage.receiverId !== selectedUser._id) return;
-      
+      const currentSelected = get().selectedUser;
+      if (!currentSelected) return;
+
+      const isCurrentChat =
+        newMessage.senderId === currentSelected._id ||
+        newMessage.receiverId === currentSelected._id;
+
+      if (!isCurrentChat) return;
+
       set({
-        messages: [...get().messages, newMessage], 
+        messages: [...get().messages, newMessage],
       });
     });
   },

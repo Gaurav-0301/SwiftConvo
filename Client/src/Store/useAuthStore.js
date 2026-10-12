@@ -1,21 +1,20 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
-import {io} from "socket.io-client"
-const API="http://localhost:2724"
+import { io } from "socket.io-client";
 
-export const useAuthStore = create((set,get) => ({
-   
+const API = "http://localhost:2724";
+
+export const useAuthStore = create((set, get) => ({
   authUser: null,
   isSignUp: false,
   isLoggingIn: false,
   isUpdatingProfile: false,
   isCheckingAuth: true,
-  onlineUsers:[],
-  socket:null,
+  onlineUsers: [],
+  socket: null,
 
   checkAuth: async () => {
-   
     try {
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
@@ -35,28 +34,26 @@ export const useAuthStore = create((set,get) => ({
       set({ authUser: res.data });
       toast.success("Account created successfully");
       get().connectSocket();
-    } // useAuthStore.js
-catch (error) {
-  
-  const errorMessage = error.response?.data?.message || "An error occurred";
-  toast.error(errorMessage);
-  console.log("Signup error details:", error.response?.data);
-}finally {
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
+      console.log("Signup error details:", error.response?.data);
+    } finally {
       set({ isSignUp: false });
     }
   },
 
-  logout:async()=>{
+  logout: async () => {
     try {
-        await axiosInstance.post("/auth/logout");
-        set({authUser:null});
-        toast.success("Logout successfully !!")
-        get().disConnectSocket();
+      await axiosInstance.post("/auth/logout");
+      get().disConnectSocket();
+      set({ authUser: null });
+      toast.success("Logout successfully!");
     } catch (error) {
-        console.log("Logout error in useAuthStore ",error);
+      console.log("Logout error in useAuthStore:", error);
     }
   },
-    
+
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
@@ -64,36 +61,34 @@ catch (error) {
       set({ authUser: res.data });
       toast.success("Login successfully");
       get().connectSocket();
-    } // useAuthStore.js
-catch (error) {
-  
-  const errorMessage = error.response?.data?.message || "An error occurred";
-  toast.error(errorMessage);
-  console.log("Signup error details:", error.response?.data);
-}finally {
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
+      console.log("Login error details:", error.response?.data);
+    } finally {
       set({ isLoggingIn: false });
     }
   },
-  updateProfile:async(profilePic)=>{
-    set({isUpdatingProfile:true});
+
+  updateProfile: async (profilePic) => {
+    set({ isUpdatingProfile: true });
     try {
-      const res=await axiosInstance.put("/auth/updateprofile",profilePic);
-      set({authUser:res.data});
+      const res = await axiosInstance.put("/auth/updateprofile", profilePic);
+      set({ authUser: res.data });
       toast.success("Profile updated successfully");
     } catch (error) {
       const errorMessage = error.response?.data?.message || "An error occurred";
       toast.error(errorMessage);
-      console.log("updateProfile error in useAuthStore.." , error.response?.data)
-    }finally{
-      set({isUpdatingProfile:false});
+      console.log("updateProfile error in useAuthStore:", error.response?.data);
+    } finally {
+      set({ isUpdatingProfile: false });
     }
   },
-  
-  
-connectSocket: () => {
+
+  connectSocket: () => {
     const { authUser, socket } = get();
-    if (!authUser) return;
-    
+    if (!authUser?._id) return;
+
     if (socket?.connected) return;
 
     if (socket) {
@@ -101,8 +96,9 @@ connectSocket: () => {
     }
 
     const newSocket = io(API, {
-      query: { userId: authUser._id },
-      withCredentials: true, // Required when handling sessions/cookies with socket connections
+      query: { userId: authUser._id.toString() },
+      withCredentials: true,
+      transports: ["websocket", "polling"],
     });
 
     newSocket.connect();
@@ -113,13 +109,10 @@ connectSocket: () => {
     });
   },
 
-
   disConnectSocket: () => {
     if (get().socket?.connected) {
       get().socket.disconnect();
-      set({ socket: null, onlineUsers: [] });
     }
+    set({ socket: null, onlineUsers: [] });
   },
-  
-
 }));

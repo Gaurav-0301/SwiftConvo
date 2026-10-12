@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cloudinary = require("../lib/cloudinary.lib.js");
 
-
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -20,7 +19,7 @@ const signup = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "Email already used !! Try another account.",
+        message: "Email already used! Try another account.",
       });
     }
 
@@ -32,16 +31,13 @@ const signup = async (req, res) => {
       email,
       password: hashedPassword,
     });
-  console.log("userid",user._id.toString().slice(0,10));
-    const uId=user._id.toString().slice(0,10);
 
-    const uidres= await reg.findByIdAndUpdate(
+    const uId = user._id.toString().slice(0, 10);
+    const updatedUser = await reg.findByIdAndUpdate(
       user._id,
-      {uid:uId},
+      { uid: uId },
       { new: true }
-    );
-
-    console.log("uid:",uId);
+    ).select("-password");
 
     const token = jwt.sign(
       { id: user._id },
@@ -55,15 +51,19 @@ const signup = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({
-      message: "User registered successfully",
-      data:user,
+    res.status(201).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      profilePic: updatedUser.profilePic,
+      uid: updatedUser.uid,
+      createdAt: updatedUser.createdAt,
     });
-
   } catch (error) {
+    console.error("Signup error:", error);
     res.status(500).json({
       success: false,
-      message: "Sign up failed",
+      message: "Sign up failed: " + error.message,
     });
   }
 };
@@ -97,6 +97,12 @@ const login = async (req, res) => {
       });
     }
 
+    // Ensure user has a uid
+    if (!user.uid) {
+      user.uid = user._id.toString().slice(0, 10);
+      await user.save();
+    }
+
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
@@ -110,13 +116,18 @@ const login = async (req, res) => {
     });
 
     res.status(200).json({
-      message: "Login successful",
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profilePic: user.profilePic,
+      uid: user.uid,
+      createdAt: user.createdAt,
     });
-
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: "Login failed",
+      message: "Login failed: " + error.message,
     });
   }
 };
@@ -133,41 +144,38 @@ const updateProfile = async (req, res) => {
   try {
     const { profilePic } = req.body;
     if (!req.user) {
-        return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Unauthorized" });
     }
     const userId = req.user._id;
 
     if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
+      return res.status(400).json({ message: "Profile picture is required" });
     }
 
-   const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const uploadResponse = await cloudinary.uploader.upload(profilePic);
 
     const updatedUser = await reg.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
       { new: true }
-    ).select("-password"); 
+    ).select("-password");
 
     res.status(200).json(updatedUser);
-    
   } catch (error) {
-    console.log("ProfileUpdate Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("ProfileUpdate Error:", error);
+    res.status(500).json({ message: "Profile update failed: " + error.message });
   }
 };
 
-const checkAuth=(req,res)=>{
+const checkAuth = (req, res) => {
   try {
     res.status(200).json(req.user);
   } catch (error) {
-    console.log("Error in CheckAuthController ",error);
+    console.error("Error in CheckAuthController:", error);
     res.status(500).json({
-      message:"Error in CheckAuthController"
+      message: "Error in CheckAuthController",
     });
   }
-}
+};
 
-
-
-module.exports = { login, signup, logout ,updateProfile,checkAuth };
+module.exports = { login, signup, logout, updateProfile, checkAuth };

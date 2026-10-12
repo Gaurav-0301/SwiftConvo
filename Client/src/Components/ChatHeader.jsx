@@ -12,7 +12,7 @@ const ChatHeader = () => {
   if (!selectedUser) return null;
 
 
-  const isOnline = Array.isArray(onlineUsers) && onlineUsers.includes(selectedUser._id);
+  const isOnline = Array.isArray(onlineUsers) && onlineUsers.map(String).includes(selectedUser._id?.toString());
 
   return (
     <div className="p-2.5 border-b border-base-300 bg-base-100/50 backdrop-blur-md">

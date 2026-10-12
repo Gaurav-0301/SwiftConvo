@@ -44,13 +44,13 @@ const App = () => {
     checkAuth();
   }, []);
 
- useEffect(() => {
-  if (authUser) {
-    connectSocket();
-  } else {
-    disConnectSocket();
-  }
-}, [authUser, connectSocket, disConnectSocket]);
+  useEffect(() => {
+    if (authUser?._id) {
+      connectSocket();
+    } else if (!authUser) {
+      disConnectSocket();
+    }
+  }, [authUser?._id, connectSocket, disConnectSocket]);
 
 
  
