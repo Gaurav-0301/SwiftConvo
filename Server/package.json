@@ -1,16 +1,18 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "SwiftConvo Backend Server",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "cookie-parser": "^1.4.7",

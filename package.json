@@ -1,0 +1,22 @@
+{
+  "name": "swiftconvo",
+  "version": "1.0.0",
+  "description": "SwiftConvo - Real-Time Chat & Friends Application",
+  "main": "Server/server.js",
+  "scripts": {
+    "dev": "npm run dev --prefix Server",
+    "client": "npm run dev --prefix Client",
+    "server": "npm run dev --prefix Server",
+    "build": "npm install --prefix Server && npm install --prefix Client && npm run build --prefix Client",
+    "start": "node Server/server.js"
+  },
+  "keywords": [
+    "chat",
+    "socket.io",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "Gaurav-0301",
+  "license": "ISC"
+}
